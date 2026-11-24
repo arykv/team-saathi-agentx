@@ -1,0 +1,19 @@
+agent               agent.py
+requests            300   (dev.jsonl)
+accuracy            1.000   (baseline 0.527)
+wrong commits       5 in 5 requests
+earliness           1.84 words before the end (13.9% of the request, best possible 16.3%)
+searches/request    1.02   (wasted 0.02)
+latency             0.19 ms/word, p95 0.45 ms
+SCORE               46.6   (baseline 20.0)
+
+by tag              n    accuracy  wrong  earliness  score
+  code_mixed          25    1.000      0     20.1%    52.0
+  correction          55    1.000      5      9.6%    36.5
+  late_constraint     50    1.000      0      9.0%    45.4
+  plain              177    1.000      0     15.8%    49.5
+
+filters you reported at the last word, vs the gold ones (300 requests):
+  category 1.00  colour 1.00  size 1.00  brand 1.00  max_price 1.00
+
+per-request results: results/dev_results.jsonl

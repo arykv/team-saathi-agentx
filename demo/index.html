@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentX Live · Team Saathi</title>
+<style>
+:root{--bg:#0d1117;--panel:#151b23;--line:#263040;--ink:#e8edf3;--muted:#8b98a9;--accent:#7cc4ff;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;
+--c-category:#a78bfa;--c-colour:#f472b6;--c-size:#34d399;--c-brand:#60a5fa;--c-max_price:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 20px 40px}
+h1{font-size:22px;margin:0}
+.sub{color:var(--muted);margin:4px 0 18px}
+.bar{display:flex;gap:10px;flex-wrap:wrap}
+.bar input{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit}
+button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font:inherit;cursor:pointer}
+button.primary{background:var(--accent);color:#06121f;border:0;font-weight:700}
+button.rec{background:var(--bad);color:#fff;border:0}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.presets button{font-size:13px;padding:6px 10px;border-radius:999px;color:var(--muted)}
+.stream{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;min-height:96px;font-size:24px;line-height:1.7}
+.w{display:inline-block;margin-right:.32em;opacity:.25;transition:opacity .2s,transform .2s;transform:translateY(4px);border-bottom:3px solid transparent}
+.w.on{opacity:1;transform:none}
+.w.cue{color:var(--warn)}
+.w.commit{background:var(--ok);color:#052e16;border-radius:6px;padding:0 6px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:78px}
+.slot .k{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.slot .v{font-size:18px;font-weight:700;margin-top:4px;min-height:27px}
+.slot.pending .v{color:var(--warn)}
+.slot.pending .v::after{content:" …"}
+.slot.changed{animation:flash .6s}
+@keyframes flash{0%{box-shadow:0 0 0 0 var(--accent)}100%{box-shadow:0 0 0 12px transparent}}
+.row{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.meter{display:flex;align-items:baseline;gap:10px}
+.meter .n{font-size:48px;font-weight:800;font-variant-numeric:tabular-nums}
+.meter .l{color:var(--muted)}
+.track{height:10px;background:#0b0f14;border-radius:999px;overflow:hidden;margin-top:8px}
+.track div{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));width:0;transition:width .3s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:#0b0f14;border-radius:10px;padding:8px 10px}
+.stat b{display:block;font-size:18px}
+.stat span{font-size:12px;color:var(--muted)}
+.product{display:flex;flex-direction:column;gap:6px}
+.product .status{font-weight:700;color:var(--muted)}
+.product .status.shown{color:var(--ok)}
+.product .title{font-size:20px;font-weight:700}
+.product .meta{color:var(--muted)}
+.foot{color:var(--muted);font-size:13px;margin-top:18px}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}.stream{font-size:19px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AgentX · Anticipatory Commerce: live</h1>
+  <p class="sub">Team Saathi. Type or speak a request. Words go to the agent one at a time, and it shows the product the moment it is certain.</p>
+  <div class="bar">
+    <input id="q" value="hey, do you have any black oops, grey size M hooded sweatshirt by Urbanyx, for under 1.1k for the gym">
+    <button class="primary" id="play">▶ Play</button>
+    <button id="mic">🎙 Speak</button>
+  </div>
+  <div class="presets" id="presets"></div>
+  <div class="stream" id="stream"></div>
+  <div class="grid" id="slots"></div>
+  <div class="row">
+    <div class="panel">
+      <div class="meter"><span class="n" id="count">1074</span><span class="l">products still possible</span></div>
+      <div class="track"><div id="bar"></div></div>
+      <div class="stats">
+        <div class="stat"><b id="s-words">0</b><span>words heard</span></div>
+        <div class="stat"><b id="s-search">0</b><span>searches used</span></div>
+        <div class="stat"><b id="s-ms">0</b><span>ms per word</span></div>
+      </div>
+    </div>
+    <div class="panel product">
+      <div class="status" id="pstatus">Listening…</div>
+      <div class="title" id="ptitle"></div>
+      <div class="meta" id="pmeta"></div>
+    </div>
+  </div>
+  <p class="foot">Facet counts come from a model built offline that stores no product IDs. Every product shown came from a counted search. The agent waits at clause boundaries and correction cues ("oops", "actually", "nahi", "matlab").</p>
+</div>
+<script>
+const SLOTS = [["category","Category"],["colour","Colour"],["size","Size"],["brand","Brand"],["max_price","Budget"]];
+const PRESETS = [
+  ["Plain","show me olive Urbanyx size 6 UK slides not more than seven hundred nothing too flashy"],
+  ["Correction","hey, do you have any black oops, grey size M hooded sweatshirt by Urbanyx, for under 1.1k for the gym"],
+  ["Hinglish","mujhe gulabi Mehrin dress XS saadhe teen hazaar tak chahiye"],
+  ["Late constraint","show me Sonquil headphones under 7,500, also, in blue for my brother"],
+  ["Hindi numbers","bhaiya, dikhao navy denims size 32, from Northweft pandrah sau se kam chahiye"],
+  ["Ambiguous word","black Pacevo trainers size 7 nothing over 6 grand"]
+];
+const CUES = new Set(["oops","sorry","wait","actually","rather","meant","nahi","matlab","instead","no"]);
+const $ = s => document.querySelector(s);
+const TOTAL = 1074;
+$("#slots").innerHTML = SLOTS.map(([k,l]) => `<div class="slot" id="slot-${k}" style="border-top:3px solid var(--c-${k})"><div class="k">${l}</div><div class="v"></div></div>`).join("");
+PRESETS.forEach(([n,t]) => { const b = document.createElement("button"); b.textContent = n; b.onclick = () => { $("#q").value = t; play(); }; $("#presets").appendChild(b); });
+
+async function trace(text){
+  const r = await fetch("/trace", {method:"POST", body: JSON.stringify({text})}); return r.json();
+}
+function fmt(k, v){ if (v == null) return ""; if (Array.isArray(v)) return v.join(" / "); if (k === "max_price") return "≤ ₹" + Number(v).toLocaleString("en-IN"); return v; }
+let prev = {};
+function show(step, n, committedAt, data, upto){
+  $("#s-words").textContent = step.i;
+  $("#s-search").textContent = step.searches;
+  $("#s-ms").textContent = step.ms.toFixed(2);
+  const c = step.candidates == null ? TOTAL : step.candidates;
+  $("#count").textContent = c;
+  $("#bar").style.width = (100 * (1 - Math.log(c) / Math.log(TOTAL))) + "%";
+  SLOTS.forEach(([k]) => {
+    const el = $("#slot-" + k), v = fmt(k, step.filters[k]);
+    if (el.querySelector(".v").textContent !== v){ el.classList.remove("changed"); void el.offsetWidth; el.classList.add("changed"); }
+    el.querySelector(".v").textContent = v;
+    el.classList.toggle("pending", step.pending.includes(k) && !!v);
+  });
+  if (committedAt){
+    const p = data.product;
+    $("#pstatus").textContent = `Shown at word ${committedAt} of ${n}: ${n - committedAt} words before the shopper finished`;
+    $("#pstatus").className = "status shown";
+    if (p){ $("#ptitle").textContent = p.title; $("#pmeta").textContent = `${p.product_id} · size ${p.size || "-"} · ₹${p.price.toLocaleString("en-IN")}`; }
+  }
+}
+async function play(){
+  const text = $("#q").value.trim(); if (!text) return;
+  const data = await trace(text);
+  const words = data.steps.map(s => s.word);
+  $("#stream").innerHTML = words.map((w,i) => `<span class="w" id="w${i}">${w.replace(/</g,"&lt;")}</span>`).join("");
+  $("#pstatus").textContent = "Listening…"; $("#pstatus").className = "status"; $("#ptitle").textContent = ""; $("#pmeta").textContent = "";
+  let committedAt = null;
+  for (const s of data.steps){
+    const el = $("#w" + (s.i - 1)); el.classList.add("on");
+    if (CUES.has(s.word.toLowerCase().replace(/[^a-z]/g,""))) el.classList.add("cue");
+    if (s.commit){ committedAt = s.i; el.classList.add("commit"); }
+    show(s, words.length, committedAt, data);
+    await new Promise(r => setTimeout(r, 420));
+  }
+  if (!committedAt && data.product){
+    $("#pstatus").textContent = "Answered at the end (it was never safe to commit early)"; $("#pstatus").className = "status shown";
+    $("#ptitle").textContent = data.product.title; $("#pmeta").textContent = `${data.product.product_id} · size ${data.product.size || "-"} · ₹${data.product.price.toLocaleString("en-IN")}`;
+  }
+}
+$("#play").onclick = play;
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") play(); });
+
+// Speech: browser speech recognition streams interim words; each update re-runs the agent live.
+let rec;
+$("#mic").onclick = () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR){ alert("Speech recognition needs Chrome. You can type instead."); return; }
+  if (rec){ rec.stop(); return; }
+  rec = new SR(); rec.lang = "en-IN"; rec.interimResults = true; rec.continuous = true;
+  $("#mic").classList.add("rec"); $("#mic").textContent = "■ Stop";
+  rec.onresult = async e => {
+    const text = [...e.results].map(r => r[0].transcript).join(" ").trim(); $("#q").value = text;
+    const data = await trace(text); const n = data.steps.length; if (!n) return;
+    $("#stream").innerHTML = data.steps.map(s => `<span class="w on${s.commit ? " commit" : ""}">${s.word}</span>`).join("");
+    const ci = data.steps.find(s => s.commit); show(data.steps[n-1], n, ci ? ci.i : null, data);
+  };
+  rec.onend = () => { rec = null; $("#mic").classList.remove("rec"); $("#mic").textContent = "🎙 Speak"; };
+  rec.start();
+};
+</script>
+</body>
+</html>
