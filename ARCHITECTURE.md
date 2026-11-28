@@ -1,6 +1,6 @@
 # Anticipatory Commerce agent: architecture
 
-**Team Saathi, Masters' Union · AgentX Challenge 1 · `agent.py`, Python standard library only**
+**Team Claudus, Masters' Union · AgentX Challenge 1 · `agent.py`, Python standard library only**
 
 **Goal.** Words arrive one at a time. Show the right product as early as possible, and never show the wrong one.
 A wrong commit costs **−1.0**, while earliness can add at most **+0.6** and each extra search costs **−0.02**. So the agent is built to be **certain before it speaks**.

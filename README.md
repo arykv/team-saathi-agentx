@@ -1,4 +1,4 @@
-# AgentX Challenge 1: Anticipatory Commerce · Team Saathi
+# AgentX Challenge 1: Anticipatory Commerce · Team Claudus
 
 A shopping agent that reads a request one word at a time and shows the right product the moment it is certain.
 It never guesses: a wrong product costs more than being early earns.

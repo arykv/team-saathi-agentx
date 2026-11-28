@@ -1,4 +1,4 @@
-# Abstract: Anticipatory Commerce agent (Team Saathi, Masters' Union)
+# Abstract: Anticipatory Commerce agent (Team Claudus, Masters' Union)
 
 We built a shopping agent that finds the product before the shopper finishes speaking, and that would rather wait one more word than show the wrong thing.
 On the public dev set it scores **46.6 against the baseline's 20.0** (the ceiling is ≈49.8). It gets **100% of final answers right**, uses **1.02 searches per request** and takes **0.2 ms per word**.
